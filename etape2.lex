@@ -1,4 +1,4 @@
-%{
+ï»¿%{
 	#include <string.h>
 	#include <stdio.h>
 	#include <stdlib.h>
@@ -7,7 +7,7 @@
 	//On initialise la liste des champs lexicaux
 	enum KindToken {DEFAGENT, PO, IDF, PV, DXPT, INT, FLOAT, BOOLEAN, STRING, CHAR, ENTIER, REEL, VG, PF, CREERAGENT, RANDOM, MANUAL, TABLE, DIESE, NOMFIC, CARACTERE, CHAINE, SUPPRAGENT, INF, SUP, EGAL, INFEG, SUPEG, DIFF, ET, OU, NON, VRAI, FAUX, MODIFAGENT, AFFECT, PLUS, MOINS, MULTI, DIVIS, EXPO, UNKNOW};
 	
-	//On crée la structure qui vas permettre de stocké un mot et le champ lexical associé
+	//On crÃ©e la structure qui vas permettre de stockÃ© un mot et le champ lexical associÃ©
 	struct Token { 
 		KindToken kind;
 		union {int the_int; float the_float; char the_char; char* the_string; bool the_bool;} Value;
@@ -21,7 +21,7 @@ doubleQ "
 simpleQ '
 %%
 	
-	" "|\t|\n {;}//Espace, tabulation, retour à la ligne => ne rien faire
+	" "|\t|\n {;}//Espace, tabulation, retour Ã  la ligne => ne rien faire
 	"DEFAGENT" {
 		lexemes[nblex].kind = DEFAGENT;
 		nblex++;
@@ -95,7 +95,7 @@ simpleQ '
 		nblex++;
 	}
 	//non fichier
-	/* comment dire tout les caractères sauf \ / : * ? " < > | */
+	/* comment dire tout les caractÃ¨res sauf \ / : * ? " < > | */
 	//entier
 	{digit}+ {
 		lexemes[nblex].kind = ENTIER;
@@ -103,7 +103,7 @@ simpleQ '
 		nblex++;
 	}
 	//reel
-	/* regex a vérifier */ 
+	/* regex a vÃ©rifier */ 
 	{digit}+{\.{digit}+}? {
 		lexemes[nblex].kind = REEL;
 		lexemes[nblex].Value.the_float = atof(yytext);
