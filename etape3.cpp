@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 
 using namespace std;
 
@@ -29,12 +30,12 @@ struct d_type_agent {
 	d_attribut attr[100];
 };
 
-struct d_liste_agent {
+struct d_liste_type_agent {
 	d_type_agent  l_agent[1000];
 	int nb_agent=0;
 };
 
-d_liste_agent liste_type_agent;
+d_liste_type_agent liste_type_agent;
 
 /*
 	Définition de la structure de stockage des agents
@@ -48,13 +49,13 @@ struct a_attribut {
 };
 
 struct a_agent {
-	string type_agent;
-	string nom_agent;
+	d_type_agent type_agent;
 	a_attribut attribut[100];
 };
 
 struct a_liste_agent {
 	a_agent liste[1000];
+	int nb_agent = 0;
 };
 
 a_liste_agent liste_agent;
@@ -63,22 +64,22 @@ a_liste_agent liste_agent;
 */
 
 bool insererTypeAgent(string nom);
-bool verifierNomAgent(string nomAgent);
+bool verifierNomTypeAgent(string nomAgent);
 bool insererAttribut(string nom, d_classe_attribut type);
 bool verifierNomAttribut(string nomattribut);
 
 
 bool insererTypeAgent(string nom) {
-	if(verifierNomAgent(nom)) {
+	if(verifierNomTypeAgent(nom)) {
+		liste_type_agent.nb_agent++;
 		liste_type_agent.l_agent[nb_agent].nom_agent = nom;
 		liste_type_agent.l_agent[nb_agent].nb_attribut =0;
-		liste_type_agent.nb_agent++;
 		return true;
 	}
 	return false;
 }
 
-bool verifierNomAgent(string nomAgent){
+bool verifierNomTypeAgent(string nomAgent){
 	for (int i =0; i < liste_type_agent.nb_agent; i++) {
 		if (nomAgent ==  liste_type_agent.l_agent[i].nom_agent) {
 			return false;
@@ -149,7 +150,117 @@ struct s_critere{
 */
 
 int CreerAgent(d_type_agent typeA, int nb_agent, d_type_creation type_creation, s_donne donne = null){
+	if(!verifierNomTypeAgent(typeA.nom_agent)){
+		for(int i = 0 ;i<nb_agent;i++){
+		
+			a_agent newAgent;	
+			newAgent.type_agent = typeA;
+			
+			switch(type_creation){
+				case 0: // RANDOM
+					newAgent.attribut = Random(typeA);
+				break;
+				
+				case 1:	// MANUAL
+					newAgent.attribut = Manual(typeA, donne.manual);
+				break;
+				
+				case 2:	// TABLE
+					newAgent.attribut = Table(typeA, donne.table);
+				break;
+			}
+			liste_agent.nb_agent++;
+			liste_agent.liste[liste_agent.nb_agent] = newAgent;
+		}
+		return 0;
+	}else
+		return 1;
 }
+
+a_attribut[100] Random(d_type_agent typeA){
+	a_attribut liste[100];
+	
+	for(int i=0;i<typeA.nb_attribut;i++{
+		d_attribut attribut = typeA.attr[i];
+		
+		a_attribut newAttribut;
+		
+		newAttribut.nom_attribut = attribut.nom_attribut;
+		
+		switch(attribut.type.c_attribut){
+			case 0: // INT
+				srand (time(NULL));
+				if(attribut.type.interval){
+					newAttribut.the_int = (int) (rand() % attribut.type.max + attribut.type.min);
+				}else
+					newAttribut.the_int = (int) (rand() % 100);
+				
+			break;
+			
+			case 1: // FLOAT
+				srand (time(NULL));
+				if(attribut.type.interval){
+					
+					newAttribut.the_float = ((attribut.type.max-attribut.type.min)*((float)rand()/RAND_MAX))+attribut.type.min;
+				}else
+					newAttribut.the_float = ((100.0)*((float)rand()/RAND_MAX));
+			break;
+			
+			case 2: // STRING 
+				srand (time(NULL)); 
+				
+				char* s;
+				static const char alphanum[] =
+					"0123456789"
+					"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+					"abcdefghijklmnopqrstuvwxyz";
+
+				for (int i = 0; i < 30; i++) {
+					s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+				}
+
+				s[30] = 0;
+				newAttribut.the_string = str(s);
+			break;
+			
+			case 3: // CHAR
+				srand (time(NULL));
+				
+				int maj = rand() % 2;
+				
+				if(maj = 1){
+					newAttribut.the_char = (char) (rand() % 90 + 65);
+				}else
+					newAttribut.the_char = (char) (rand() % 122 + 97);
+				
+			break;
+			
+			case 4: // BOOL
+				srand (time(NULL));
+			
+				int val = rand() % 2;
+				
+				if(val = 1){
+					newAttribut.the_bool = true;
+				}else
+					newAttribut.the_bool = false;
+			break;
+		
+		}
+		
+		liste[i] = newAttribut;
+	}
+	
+	return liste;
+}
+
+a_attribut[100] Manual(d_type_agent typeA, s_manual donne){
+	
+}
+
+a_attribut[100] Table(d_type_agent typeA, s_table donne){
+}
+
 
 int ModifAgent(d_type_agent typeA, s_critere critere,s_liste_modification modifications){
 
