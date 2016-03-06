@@ -23,14 +23,14 @@ struct d_attribut {
 	d_type_attribut type;
 };
 
-struct d_agent {
+struct d_type_agent {
 	string nom_agent;
 	int nb_attribut;
-	attribut attr[100];
+	d_attribut attr[100];
 };
 
 struct d_liste_agent {
-	agent  l_agent[1000];
+	d_type_agent  l_agent[1000];
 	int nb_agent=0;
 };
 
@@ -64,8 +64,8 @@ a_liste_agent liste_agent;
 
 bool insererTypeAgent(string nom);
 bool verifierNomAgent(string nomAgent);
-bool insererattribut(string nom, d_classe_attribut type);
-bool verifierNomattribut(string nomattribut);
+bool insererAttribut(string nom, d_classe_attribut type);
+bool verifierNomAttribut(string nomattribut);
 
 
 bool insererTypeAgent(string nom) {
@@ -87,9 +87,9 @@ bool verifierNomAgent(string nomAgent){
 	return true;
 }
 
-bool insererattribut(string nom, d_classe_attribut type){
+bool insererAttribut(string nom, d_classe_attribut type){
        d_agent a =  liste_type_agent.l_agent[liste_type_agent.nb_agent];
-       if(verifierNomattribut(nom)){
+       if(verifierNomAttribut(nom)){
              a.nb_attribut++;
              d_attribut at;
              at.nom_attribut = nom;
@@ -100,7 +100,7 @@ bool insererattribut(string nom, d_classe_attribut type){
        return false;
 }
 
-bool verifierNomattribut(string nomattribut){
+bool verifierNomAttribut(string nomattribut){
        for(int i=0;i<liste_type_agent.l_agent[liste_type_agent.nb_agent].nb_attribut;i++){
              if(nomattribut==liste_type_agent.l_agent[liste_type_agent.nb_agent].attr[i].nom_attribut){
                    return false;
@@ -108,6 +108,56 @@ bool verifierNomattribut(string nomattribut){
        }
        return true;
 }
+
+/*
+	Définition de la structure de stockage pour la creation,modification, suppression d'agent
+*/
+enum d_type_creation {RANDOM,MANUAL,TABLE};
+
+struct s_modfication {
+	string nom_attribut;
+	int valeur;
+};
+
+struct s_liste_modfication {
+	s_modfication liste_modfification[100];
+};
+
+struct s_valeur{
+	union { int the_int, float the_float, string the_string, char the_char, bool the_bool};
+}
+
+struct s_manual{
+	bool ensemble; //permet de savoir si on utilise le #
+	s_valeur liste_val[100];
+}
+
+struct s_table{
+	string nom_fichier;
+}
+
+struct s_donne{
+	union { s_manual manual, s_table table};
+}
+
+struct s_critere{
+	union { s_manual manual, s_table table};
+}
+
+/*
+	Fonction de creation, modification, suppresion des agents
+*/
+
+int CreerAgent(d_type_agent typeA, int nb_agent, d_type_creation type_creation, s_donne donne = null){
+}
+
+int ModifAgent(d_type_agent typeA, s_critere critere,s_liste_modification modifications){
+
+} 
+
+int SupprAgent(d_type_agent typeA, s_critere critere){
+
+} 
 
 int main(int, char*[]) {
 
