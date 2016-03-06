@@ -59,6 +59,9 @@ struct a_liste_agent {
 };
 
 a_liste_agent liste_agent;
+
+/*----------------------------------------------------------------------------------------------------------*/
+
 /*
 	Fonction de gestion de la définition des agents
 */
@@ -68,7 +71,20 @@ bool verifierNomTypeAgent(string nomAgent);
 bool insererAttribut(string nom, d_classe_attribut type);
 bool verifierNomAttribut(string nomattribut);
 
+/*
+	Fonction de creation, modification, suppresion des agents
+*/
 
+int CreerAgent(d_type_agent typeA, int nb_agent, d_type_creation type_creation, s_donne donne = null);
+int ModifAgent(d_type_agent typeA, s_critere critere,s_liste_modification modifications);
+int SupprAgent(d_type_agent typeA, s_critere critere);
+
+
+/*----------------------------------------------------------------------------------------------------------*/
+
+/*
+	Fonction de gestion de la définition des agents
+*/
 bool insererTypeAgent(string nom) {
 	if(verifierNomTypeAgent(nom)) {
 		liste_type_agent.nb_agent++;
@@ -263,11 +279,11 @@ a_attribut[100] Table(d_type_agent typeA, s_table donne){
 
 
 int ModifAgent(d_type_agent typeA, s_critere critere,s_liste_modification modifications){
-
+	
 } 
 
 int SupprAgent(d_type_agent typeA, s_critere critere){
-
+	
 } 
 
 int main(int, char*[]) {
