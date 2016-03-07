@@ -142,24 +142,28 @@ struct s_liste_modfication {
 
 struct s_valeur{
 	union { int the_int, float the_float, string the_string, char the_char, bool the_bool};
-}
+};
+
+struct s_liste_valeur{
+	s_valeur liste_valeur[100];
+};
 
 struct s_manual{
 	bool ensemble; //permet de savoir si on utilise le #
-	s_valeur liste_val[100];
-}
+	s_liste_valeur liste_val[100];
+};
 
 struct s_table{
 	string nom_fichier;
-}
+};
 
 struct s_donne{
 	union { s_manual manual, s_table table};
-}
+};
 
 struct s_critere{
 	union { s_manual manual, s_table table};
-}
+};
 
 /*
 	Fonction de creation, modification, suppresion des agents
@@ -178,7 +182,7 @@ int CreerAgent(d_type_agent typeA, int nb_agent, d_type_creation type_creation, 
 				break;
 				
 				case 1:	// MANUAL
-					newAgent.attribut = Manual(typeA, donne.manual);
+					newAgent.attribut = Manual(typeA, donne.manual.liste_val[i]);
 				break;
 				
 				case 2:	// TABLE
@@ -270,11 +274,48 @@ a_attribut[100] Random(d_type_agent typeA){
 	return liste;
 }
 
-a_attribut[100] Manual(d_type_agent typeA, s_manual donne){
+a_attribut[100] Manual(d_type_agent typeA, s_liste_valeur donne){ /* Creation d'un agent en mode manuel */
+	a_attribut liste[100];
 	
+	for(int i=0;i<typeA.nb_attribut;i++{
+		d_attribut attribut = typeA.attr[i];
+		
+		a_attribut newAttribut;
+		
+		newAttribut.nom_attribut = attribut.nom_attribut;
+		
+		switch(attribut.type.c_attribut){
+			case 0: // INT
+					newAttribut.the_int = donne[i];
+				
+			break;
+			
+			case 1: // FLOAT
+					newAttribut.the_float = donne[i];
+			break;
+			
+			case 2: // STRING 
+					newAttribut.the_string = donne[i];
+			break;
+			
+			case 3: // CHAR
+					newAttribut.the_char = donne[i];
+				
+			break;
+			
+			case 4: // BOOL
+					newAttribut.the_bool = donne[i];
+			break;
+		
+		}
+		
+		liste[i] = newAttribut;
+	}
+	
+	return liste;
 }
 
-a_attribut[100] Table(d_type_agent typeA, s_table donne){
+a_attribut[100] Table(d_type_agent typeA, s_table donne){ /*Création d'un agent en mode table*/
 }
 
 
