@@ -182,7 +182,10 @@ int CreerAgent(d_type_agent typeA, int nb_agent, d_type_creation type_creation, 
 				break;
 				
 				case 1:	// MANUAL
-					newAgent.attribut = Manual(typeA, donne.manual.liste_val[i]);
+					if (donne.manual.ensemble) 
+						newAgent.attribut = Manual(typeA,donne.manual.liste_val[0]);
+					else
+						newAgent.attribut = Manual(typeA, donne.manual.liste_val[i]);
 				break;
 				
 				case 2:	// TABLE
@@ -333,5 +336,9 @@ int main(int, char*[]) {
 	printf("%d\n",insererAgent("lePelo"));
 	printf("%d\n",insererAgent("conducteur"));
 	printf("%d\n",insererAgent("idk"));
+
+	printf("%d\n",verifierNomTypeAgent("idk"));
+
+
 	
 }
