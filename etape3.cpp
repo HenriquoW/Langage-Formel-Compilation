@@ -43,14 +43,14 @@ d_liste_type_agent liste_type_agent;
 
 struct a_attribut {
 	string nom_attribut;
-	union { int the_int, float the_float, string the_string, char the_char, bool the_bool};
+	union { int the_int; float the_float; char* the_string; char the_char; bool the_bool;};
 	float min;
 	float max;
 };
 
 struct a_agent {
 	d_type_agent type_agent;
-	a_attribut attribut[100];
+	a_attribut *attribut;
 };
 
 struct a_liste_agent {
@@ -59,6 +59,46 @@ struct a_liste_agent {
 };
 
 a_liste_agent liste_agent;
+
+/*
+	Définition de la structure de stockage pour la creation,modification, suppression d'agent
+*/
+enum d_type_creation {RANDOM,MANUAL,TABLE};
+
+struct s_modification {
+	string nom_attribut;
+	int valeur;
+};
+
+struct s_liste_modification {
+	s_modification liste_modfification[100];
+};
+
+struct s_valeur{
+	union { int the_int;float the_float; char* the_string; char the_char; bool the_bool;};
+};
+
+struct s_liste_valeur{
+	s_valeur liste_valeur[100];
+};
+
+struct s_manual{
+	bool ensemble; //permet de savoir si on utilise le #
+	s_liste_valeur liste_val[100];
+};
+
+struct s_table{
+	string nom_fichier;
+};
+
+struct s_donne{
+	  s_manual manual; 
+	  s_table table;
+};
+
+struct s_critere{
+	 
+};
 
 /*----------------------------------------------------------------------------------------------------------*/
 
@@ -75,9 +115,13 @@ bool verifierNomAttribut(string nomattribut);
 	Fonction de creation, modification, suppresion des agents
 */
 
-int CreerAgent(d_type_agent typeA, int nb_agent, d_type_creation type_creation, s_donne donne = null);
+int CreerAgent(d_type_agent typeA, int nb_agent, d_type_creation type_creation, s_donne donne);
 int ModifAgent(d_type_agent typeA, s_critere critere,s_liste_modification modifications);
 int SupprAgent(d_type_agent typeA, s_critere critere);
+
+a_attribut* Random(d_type_agent typeA);
+a_attribut* Manual(d_type_agent typeA, s_liste_valeur donne);
+a_attribut* Table(d_type_agent typeA, s_table donne);
 
 
 /*----------------------------------------------------------------------------------------------------------*/
@@ -88,8 +132,8 @@ int SupprAgent(d_type_agent typeA, s_critere critere);
 bool insererTypeAgent(string nom) {
 	if(verifierNomTypeAgent(nom)) {
 		liste_type_agent.nb_agent++;
-		liste_type_agent.l_agent[nb_agent].nom_agent = nom;
-		liste_type_agent.l_agent[nb_agent].nb_attribut =0;
+		liste_type_agent.l_agent[liste_type_agent.nb_agent].nom_agent = nom;
+		liste_type_agent.l_agent[liste_type_agent.nb_agent].nb_attribut =0;
 		return true;
 	}
 	return false;
@@ -105,7 +149,7 @@ bool verifierNomTypeAgent(string nomAgent){
 }
 
 bool insererAttribut(string nom, d_classe_attribut type){
-       d_agent a =  liste_type_agent.l_agent[liste_type_agent.nb_agent];
+       d_type_agent a =  liste_type_agent.l_agent[liste_type_agent.nb_agent];
        if(verifierNomAttribut(nom)){
              a.nb_attribut++;
              d_attribut at;
@@ -126,50 +170,13 @@ bool verifierNomAttribut(string nomattribut){
        return true;
 }
 
-/*
-	Définition de la structure de stockage pour la creation,modification, suppression d'agent
-*/
-enum d_type_creation {RANDOM,MANUAL,TABLE};
 
-struct s_modfication {
-	string nom_attribut;
-	int valeur;
-};
-
-struct s_liste_modfication {
-	s_modfication liste_modfification[100];
-};
-
-struct s_valeur{
-	union { int the_int, float the_float, string the_string, char the_char, bool the_bool};
-};
-
-struct s_liste_valeur{
-	s_valeur liste_valeur[100];
-};
-
-struct s_manual{
-	bool ensemble; //permet de savoir si on utilise le #
-	s_liste_valeur liste_val[100];
-};
-
-struct s_table{
-	string nom_fichier;
-};
-
-struct s_donne{
-	union { s_manual manual, s_table table};
-};
-
-struct s_critere{
-	union { s_manual manual, s_table table};
-};
 
 /*
 	Fonction de creation, modification, suppresion des agents
 */
 
-int CreerAgent(d_type_agent typeA, int nb_agent, d_type_creation type_creation, s_donne donne = null){
+int CreerAgent(d_type_agent typeA, int nb_agent, d_type_creation type_creation, s_donne donne){
 	if(!verifierNomTypeAgent(typeA.nom_agent)){
 		for(int i = 0 ;i<nb_agent;i++){
 		
@@ -200,10 +207,10 @@ int CreerAgent(d_type_agent typeA, int nb_agent, d_type_creation type_creation, 
 		return 1;
 }
 
-a_attribut[100] Random(d_type_agent typeA){
+a_attribut* Random(d_type_agent typeA){
 	a_attribut liste[100];
 	
-	for(int i=0;i<typeA.nb_attribut;i++{
+	for(int i=0;i<typeA.nb_attribut;i++){
 		d_attribut attribut = typeA.attr[i];
 		
 		a_attribut newAttribut;
@@ -212,24 +219,30 @@ a_attribut[100] Random(d_type_agent typeA){
 		
 		switch(attribut.type.c_attribut){
 			case 0: // INT
+			{
 				srand (time(NULL));
 				if(attribut.type.interval){
-					newAttribut.the_int = (int) (rand() % attribut.type.max + attribut.type.min);
+					newAttribut.the_int = (int) (rand() % (int) attribut.type.max + (int) attribut.type.min);
 				}else
 					newAttribut.the_int = (int) (rand() % 100);
-				
+			}	
 			break;
 			
+			
 			case 1: // FLOAT
+			{
 				srand (time(NULL));
 				if(attribut.type.interval){
 					
 					newAttribut.the_float = ((attribut.type.max-attribut.type.min)*((float)rand()/RAND_MAX))+attribut.type.min;
 				}else
 					newAttribut.the_float = ((100.0)*((float)rand()/RAND_MAX));
+			}
 			break;
 			
+			
 			case 2: // STRING 
+			{
 				srand (time(NULL)); 
 				
 				char* s;
@@ -243,10 +256,13 @@ a_attribut[100] Random(d_type_agent typeA){
 				}
 
 				s[30] = 0;
-				newAttribut.the_string = str(s);
+				newAttribut.the_string = s;
+			}
 			break;
 			
+			
 			case 3: // CHAR
+			{
 				srand (time(NULL));
 				
 				int maj = rand() % 2;
@@ -255,10 +271,11 @@ a_attribut[100] Random(d_type_agent typeA){
 					newAttribut.the_char = (char) (rand() % 90 + 65);
 				}else
 					newAttribut.the_char = (char) (rand() % 122 + 97);
-				
+			}
 			break;
-			
+
 			case 4: // BOOL
+			{
 				srand (time(NULL));
 			
 				int val = rand() % 2;
@@ -267,6 +284,7 @@ a_attribut[100] Random(d_type_agent typeA){
 					newAttribut.the_bool = true;
 				}else
 					newAttribut.the_bool = false;
+			}
 			break;
 		
 		}
@@ -277,10 +295,10 @@ a_attribut[100] Random(d_type_agent typeA){
 	return liste;
 }
 
-a_attribut[100] Manual(d_type_agent typeA, s_liste_valeur donne){ /* Creation d'un agent en mode manuel */
+a_attribut* Manual(d_type_agent typeA, s_liste_valeur donne){ /* Creation d'un agent en mode manuel */
 	a_attribut liste[100];
 	
-	for(int i=0;i<typeA.nb_attribut;i++{
+	for(int i=0;i<typeA.nb_attribut;i++){
 		d_attribut attribut = typeA.attr[i];
 		
 		a_attribut newAttribut;
@@ -289,25 +307,25 @@ a_attribut[100] Manual(d_type_agent typeA, s_liste_valeur donne){ /* Creation d'
 		
 		switch(attribut.type.c_attribut){
 			case 0: // INT
-					newAttribut.the_int = donne[i];
+					newAttribut.the_int = donne.liste_valeur[i].the_int;
 				
 			break;
 			
 			case 1: // FLOAT
-					newAttribut.the_float = donne[i];
+					newAttribut.the_float = donne.liste_valeur[i].the_float;
 			break;
 			
 			case 2: // STRING 
-					newAttribut.the_string = donne[i];
+					newAttribut.the_string = donne.liste_valeur[i].the_string;
 			break;
 			
 			case 3: // CHAR
-					newAttribut.the_char = donne[i];
+					newAttribut.the_char = donne.liste_valeur[i].the_char;
 				
 			break;
 			
 			case 4: // BOOL
-					newAttribut.the_bool = donne[i];
+					newAttribut.the_bool = donne.liste_valeur[i].the_bool;
 			break;
 		
 		}
@@ -318,7 +336,7 @@ a_attribut[100] Manual(d_type_agent typeA, s_liste_valeur donne){ /* Creation d'
 	return liste;
 }
 
-a_attribut[100] Table(d_type_agent typeA, s_table donne){ /*Création d'un agent en mode table*/
+a_attribut* Table(d_type_agent typeA, s_table donne){ /*Création d'un agent en mode table*/
 }
 
 
@@ -332,12 +350,12 @@ int SupprAgent(d_type_agent typeA, s_critere critere){
 
 int main(int, char*[]) {
 
-	printf("%d\n",insererAgent("conducteur"));
-	printf("%d\n",insererAgent("lePelo"));
-	printf("%d\n",insererAgent("conducteur"));
-	printf("%d\n",insererAgent("idk"));
+	printf("%d\n",insererTypeAgent("conducteur"));
+	printf("%d\n",insererTypeAgent("lePelo"));
+	printf("%d\n",insererTypeAgent("conducteur"));
+	
 
-	printf("%d\n",verifierNomTypeAgent("idk"));
+	printf("%d\n",verifierNomTypeAgent("iaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
 
 
 	
