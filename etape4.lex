@@ -1,3 +1,4 @@
+%%
 INT		{return INT ;}
 FLOAT		{return FLOAT ;}
 BOOLEAN		{return BOOLEAN ;}
@@ -30,10 +31,10 @@ MODIFAGENT	{return MODIFAGENT ;}
 			/* affichage de l'unité lexicale et du caractère sans les apostrophes
 				(non demandé mais utile pour la suite) */}
 
-[0-9]+\.[0-9]+	{return REEL );
+[0-9]+\.[0-9]+	{yylval= atoi(yytext); return REEL );
 			/* affichage de l'unité lexicale et du réel */}
 
-[0-9]+		{return ENTIER ;
+[0-9]+		{yylval= atoi(yytext); return ENTIER ;
 			/* affichage de l'unité lexicale et de l'entier */}
 
 \(		{return PO ;}

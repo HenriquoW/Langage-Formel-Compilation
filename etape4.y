@@ -32,32 +32,47 @@
 %token SUPEG;
 %token DIFF;
 %token ET;
-%token OU;
+%token DEFAGENT;
+%token CREERAGENT;
+%token SUPPRAGENT;
+%token MODIFAGENT;
+%token STRING;
+%token MANUAL
+%token RANDOM
+%token TABLE
+
+%left PLUS MOINS 
+%left FOIS DIVISE 
+%right EXPO
 
 
 %%
-%start lis
+%start Input;
 
-lis : |ins li;
+Input : 
 
-ins : 
-DEFAGENT PO IDENTIFIER PV latt PF PV 
-| CREERAGENT PO nomType PV INT PV typeCreation PF
-| SUPPRAGENT PO nomType PV critere PF
-| MODIFAGENT PO nomType PV critere PV IDENTIFIER PF
-{};
+| ins {};
 
+nomType :  
+INT {printf("INT !"); $$ = THE_INT;}
+|FLOAT {printf("FLOAT !")};
+
+typeAtt :
+|STRING
+|INT
+|FLOAT
+|BOOLEAN
+|CHAR
+|INT PO INT VG INT PF
+|FLOAT PO FLOAT VG FLOAT PF {};
 
 latt : att | att PV latt {};
 
-att : IDENTIFIER DXPT nomtype {};
+att : IDENTIFIER DXPT typeAtt {};
 
-lval : val | val lval {}; /Exemple (2,56,82)(2,56,82)(2,56,82)  
+lval : val | val lval {}; //Exemple (2,56,82)(2,56,82)(2,56,82)  
 
 val : PO INT VG INT VG INT PF {}; //Exemple (2,56,82) 
-
-nomType :  INT {printf("INT !"); $$ = THE_INT;}
-|FLOAT {printf("FLOAT !");
 
 typeCreation : RANDOM
 | MANUAL lval 
@@ -66,16 +81,31 @@ typeCreation : RANDOM
 
 critere : BOOLEAN {};
 
-modifications : IDENTIFIER EGAL expression
+modifications : IDENTIFIER EGAL expr
 
-expression : 
-IDENTIFIER PLUS INT
-|
+expr :
+INT {$$ = $1;}
+|IDENTIFIER {$$ = $1;}
+|expr PLUS expr		{$$ = $1 + $3;}
+|expr MOINS expr 	{$$ = $1 - $3;}
+|expr MULTI expr 	{$$ = $1 * $2;}
+|expr DIVIS expr 	{$$ = $1 / $2;}
+|expr EXPO expr 	{$$ = $1 ^ $2;}
+|PO expr PF 		{$$ =  $2 ;}
 
-$$=THE_FLOAT}
+ins : 
+DEFAGENT PO IDENTIFIER PV latt PF PV 
+| CREERAGENT PO nomType PV INT PV typeCreation PF
+| SUPPRAGENT PO nomType PV critere PF
+| MODIFAGENT PO nomType PV critere PV IDENTIFIER PF
+{};
+
+/*$$=THE_FLOAT}
 |STRING {$$ = THE_STRING}
 |BOOLEAN {printf("BOOLEAN !"); $$ = THE_BOOLEAN}
 |CHAR {printf("CHAR !"); $$=THE_CHAR;};
+*/
+%%
 
 void yyerror(char *s) {
     fprintf(stderr, "line %d: %s\n", yylineno, s);
