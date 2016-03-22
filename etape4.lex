@@ -14,15 +14,15 @@ MODIFAGENT	{return MODIFAGENT ;}
 [tT][rR][uU][eE]	{return VRAI ;}
 [fF][aA][lL][sS][eE]	{return FAUX ;}
 
-[a-zA-Z][a-zA-Z0-9_]*	{return IDF ); 
-			/* affichage de l'unité lexicale et de l'identifiant */}
+[a-zA-Z][a-zA-Z0-9_]*	{return IDF;  
+			/* affichage de l'unité lexicale et de l'identifiant */ }
 
-[a-zA-Z][a-zA-Z0-9_]*\.[a-zA-Z0-9]{1,4}	{return NOMFIC );
+[a-zA-Z][a-zA-Z0-9_]*\.[a-zA-Z0-9]{1,4}	{return NOMFIC; 
 			/* affichage de l'unité lexicale et du nom de fichier */}
 
 \"([^"]|\"\")*\"	{char chaine[256]=""; 
 				if (strlen(yytext)>2) strncpy(chaine,yytext+1,strlen(yytext)-2) ; 
-				return CHAINE );
+				return CHAINE;
 			/* affichage de l'unité lexicale et de la chaîne sans les guillemets
 				(non demandé mais utile pour la suite) */}
 
@@ -31,10 +31,10 @@ MODIFAGENT	{return MODIFAGENT ;}
 			/* affichage de l'unité lexicale et du caractère sans les apostrophes
 				(non demandé mais utile pour la suite) */}
 
-[0-9]+\.[0-9]+	{yylval= atoi(yytext); return REEL );
+[0-9]+\.[0-9]+	{return REEL;
 			/* affichage de l'unité lexicale et du réel */}
 
-[0-9]+		{yylval= atoi(yytext); return ENTIER ;
+[0-9]+		{return ENTIER ;
 			/* affichage de l'unité lexicale et de l'entier */}
 
 \(		{return PO ;}
@@ -45,7 +45,7 @@ MODIFAGENT	{return MODIFAGENT ;}
 \#		{return DIESE ;}
 \<		{return INF ;}
 \>		{return SUP ;}
-\!		{return NON \;}
+\!		{return NON ;}
 \=		{return AFFECT ;}
 \+		{return PLUS ;}
 \-		{return MOINS ;}
@@ -60,7 +60,7 @@ MODIFAGENT	{return MODIFAGENT ;}
 \&\&		{return ET ;}
 \|\|		{return OU ;}
 
-[ \t\r\n]	;
+[ \t\r\n]	{;}
 .		{printf("Symbole inconnu %s \n",yytext);
 			/* affichage du message d'erreur et du symbole non reconnu */}
 %%
@@ -68,5 +68,6 @@ MODIFAGENT	{return MODIFAGENT ;}
 int yywrap()
 {
 	printf("Fin de l'analyse lexicale \n");
+return 0;
 }
 

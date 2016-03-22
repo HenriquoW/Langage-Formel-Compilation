@@ -1,44 +1,43 @@
 %{
-// declaration
-#include "etape3.h"
+// declaratio
+//%union{int entier; float flottant; char* chaine; char caractere;bool booleen; char* nomFic;};
+
 %}
 
-%union{Agent * agent;int entier; float flottant; char* chaine; char caractere;bool booleen; char* nomFic}
-
-%token <entier> INT;
-%token <flottant> FLOAT;
-%token <chaine> IDENTIFIER;
-%token <caractere> CHAR;
-%token <booleen> BOOLEAN;
-%token <nomFic> NOMFIC;
-
-%token PO;
-%token PF;
-%token VG;
-%token PV;
-%token DXPT;
-%token DIESE;
-%token INF;
-%token SUP;
-%token NON;
-%token AFFECT;
-%token PLUS;
-%token MOINS;
-%token MULTI;
-%token DIVIS;
-%token EXPO;
-%token EGAL;
-%token INEG;
-%token SUPEG;
-%token DIFF;
-%token ET;
-%token DEFAGENT;
-%token CREERAGENT;
-%token SUPPRAGENT;
-%token MODIFAGENT;
-%token STRING;
+%token  INT VRAI FAUX IDF CHAINE CARACTERE REEL ENTIER
+%token FLOAT
+%token IDENTIFIER
+%token  CHAR
+%token  BOOLEAN
+%token  NOMFIC
+%token PO
+%token PF
+%token VG
+%token PV
+%token DXPT
+%token DIESE
+%token INF
+%token SUP
+%token NON
+%token AFFECT
+%token PLUS
+%token MOINS
+%token MULTI
+%token DIVIS
+%token EXPO
+%token EGAL
+%token INEG
+%token SUPEG
+%token DIFF
+%token ET
+%token DEFAGENT
+%token CREERAGENT
+%token SUPPRAGENT
+%token MODIFAGENT
+%token STRING
 %token MANUAL
 %token RANDOM
+%token OU
 %token TABLE
 
 %left PLUS MOINS 
@@ -72,9 +71,9 @@ latt : att | att PV latt {};
 
 att : IDENTIFIER DXPT typeAtt {};
 
-lval : val | val lval {}; //Exemple (2,56,82)(2,56,82)(2,56,82)  
+lval : val | val lval {/*Exemple (2,56,82)(2,56,82)(2,56,82)*/};   
 
-val : PO INT VG INT VG INT PF {}; //Exemple (2,56,82) 
+val : PO INT VG INT VG INT PF {/*Exemple (2,56,82)*/};  
 
 typeCreation : RANDOM
 | MANUAL lval 
@@ -82,6 +81,11 @@ typeCreation : RANDOM
 | TABLE NOMFIC {};
 
 critere : BOOLEAN {};
+
+lmodif :
+modifications
+|modifications PV lmodif
+{};
 
 modifications : IDENTIFIER EGAL expr1 {};
 
@@ -114,17 +118,14 @@ ins :
 DEFAGENT PO IDENTIFIER PV latt PF PV 
 | CREERAGENT PO IDENTIFIER PV INT PV typeCreation PF
 | SUPPRAGENT PO IDENTIFIER PV critere PF
-| MODIFAGENT PO IDENTIFIER PV critere PV modifications PF
+| MODIFAGENT PO IDENTIFIER PV critere PV lmodif PF
 {};
 
 
 %%
+#include "lex.yy.c"
+/*int yyerror() {
+    printf("line : %s\n", yytext);
+	return 0;
+}*/
 
-void yyerror(char *s) {
-    fprintf(stderr, "line %d: %s\n", yylineno, s);
-}
-
-main()
-{
-	yyparse();
-}
