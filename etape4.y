@@ -51,14 +51,16 @@
 
 Input : 
 
-| ins {};
+| ins 
+| lins {};
 
-nomType :  
-INT {printf("INT !"); $$ = THE_INT;}
-|FLOAT {printf("FLOAT !")};
+lins :
+ins ins
+| lins ins {};
+
 
 typeAtt :
-|STRING
+STRING
 |INT
 |FLOAT
 |BOOLEAN
@@ -81,30 +83,41 @@ typeCreation : RANDOM
 
 critere : BOOLEAN {};
 
-modifications : IDENTIFIER EGAL expr
+modifications : IDENTIFIER EGAL expr1 {};
 
-expr :
-INT {$$ = $1;}
-|IDENTIFIER {$$ = $1;}
-|expr PLUS expr		{$$ = $1 + $3;}
-|expr MOINS expr 	{$$ = $1 - $3;}
-|expr MULTI expr 	{$$ = $1 * $2;}
-|expr DIVIS expr 	{$$ = $1 / $2;}
-|expr EXPO expr 	{$$ = $1 ^ $2;}
-|PO expr PF 		{$$ =  $2 ;}
+expr1 :
+expr1 PLUS expr2		
+|expr1 MOINS expr2 
+|expr2	
+{};	
+
+expr2 :
+expr2 MULTI expr3 	
+|expr2 DIVIS expr3 
+|expr3
+{};
+
+expr3 :
+expr3 EXPO expr4
+|expr4	 	
+{};
+
+expr4 :
+PO expr1 PF
+|IDENTIFIER
+|INT
+|FLOAT	 
+{};
+
 
 ins : 
 DEFAGENT PO IDENTIFIER PV latt PF PV 
-| CREERAGENT PO nomType PV INT PV typeCreation PF
-| SUPPRAGENT PO nomType PV critere PF
-| MODIFAGENT PO nomType PV critere PV IDENTIFIER PF
+| CREERAGENT PO IDENTIFIER PV INT PV typeCreation PF
+| SUPPRAGENT PO IDENTIFIER PV critere PF
+| MODIFAGENT PO IDENTIFIER PV critere PV modifications PF
 {};
 
-/*$$=THE_FLOAT}
-|STRING {$$ = THE_STRING}
-|BOOLEAN {printf("BOOLEAN !"); $$ = THE_BOOLEAN}
-|CHAR {printf("CHAR !"); $$=THE_CHAR;};
-*/
+
 %%
 
 void yyerror(char *s) {
